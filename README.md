@@ -40,6 +40,25 @@ Hopefully I've done a decent job of making these guides bulletproof - but please
 
 The are also PDF versions of the setup instructions in this folder if you'd prefer.
 
+## How to Get Started with Jupyter Notebook
+
+After setting up your conda environment, follow these steps to start working with Jupyter Notebook:
+
+1. Open your terminal (Mac/Linux) or Command Prompt/PowerShell (Windows)
+2. Activate the conda environment:
+   ```
+   conda activate llms
+   ```
+3. Launch Jupyter Lab:
+   ```
+   jupyter lab
+   ```
+4. Your default web browser should open automatically with Jupyter Lab running
+5. Navigate to the week's folder you want to work on and open the notebook (.ipynb file)
+6. Run cells by clicking the "Run" button or pressing Shift+Enter
+
+If you need to stop the Jupyter server, press Ctrl+C in the terminal where it's running and confirm with 'y'.
+
 ### An important point on API costs (which are optional! No need to spend if you don't wish)
 
 During the course, I'll suggest you try out the leading models at the forefront of progress, known as the Frontier models. I'll also suggest you run open-source models using Google Colab. These services have some charges, but I'll keep cost minimal - like, a few cents at a time. And I'll provide alternatives if you'd prefer not to use them.
