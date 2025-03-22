@@ -280,6 +280,136 @@ def stream_brochure(company_name, url):
         update_display(Markdown(response), display_id=display_handle.display_id)
 ```
 
+## How Longer Conversations Look Like
+You're already familar with prompts being organized into lists like:
+
+```python
+[
+    {"role": "system", "content": "system message here"},
+    {"role": "user", "content": "user prompt here"}
+]
+```
+
+In fact this structure can be used to reflect a longer conversation history:
+
+```python
+[
+    {"role": "system", "content": "system message here"},
+    {"role": "user", "content": "first user prompt here"},
+    {"role": "assistant", "content": "the assistant's response"},
+    {"role": "user", "content": "the new user prompt"},
+]
+```
+
+## Gradio Example for User Interfaces
+```python
+import gradio as gr 
+
+def shout(text):
+    print(f"Shout has been called with input {text}")
+    return text.upper()
+
+# Use shout function as handler
+gr.Interface(fn=shout, inputs="textbox", outputs="textbox").launch()
+
+Makes the interface publicly available LIVE.
+gr.Interface(fn=shout, inputs="textbox", outputs="textbox", flagging_mode="never").launch(share=True)
+# Running on local URL:  http://127.0.0.1:7861
+# Running on public URL: https://629f79c7107379fec5.gradio.live
+
+# Adding inbrowser=True opens up a new browser window automatically
+gr.Interface(fn=shout, inputs="textbox", outputs="textbox", flagging_mode="never").launch(inbrowser=True)
+
+# Define this variable and then pass js=force_dark_mode when creating the Interface
+force_dark_mode = """
+function refresh() {
+    const url = new URL(window.location);
+    if (url.searchParams.get('__theme') !== 'dark') {
+        url.searchParams.set('__theme', 'dark');
+        window.location.href = url.href;
+    }
+}
+"""
+gr.Interface(fn=shout, inputs="textbox", outputs="textbox", flagging_mode="never", js=force_dark_mode).launch()
+
+# And now - changing the function from "shout" to "message_gpt"
+view = gr.Interface(
+    fn=message_gpt,
+    inputs=[gr.Textbox(label="Your message:", lines=6)],
+    outputs=[gr.Textbox(label="Response:", lines=8)],
+    flagging_mode="never"
+)
+view.launch()
+```
+
+## Note on Mermaid.js with Python
+Gradio doesn't have native function for displaying mermaid.js diagrams with Markdown but the native `Ipython.display.Markdown` has it avaialble since Jupyter Lab v4.1.
+```
+from IPython.display import Markdown
+
+Markdown("""
+`mermaid
+    graph TD;
+    A[Shock] --> B[Denial]
+    B --> C[Anger]
+    C --> D[Bargaining]
+    D --> E[Depression]
+    E --> F[Acceptance]
+    F --> G[Hope]
+`
+""")
+```
+
+## What are Tools?
+
+1. Tools allow frontier models to connect with external functions
+    * Richer responses by extending knowledge
+    * Ability to carry out actions within the application
+    * Enhanced capabilities, like calculations
+
+2. How it works
+    * In a request to the LLM, specify available Tools
+    * The reply is either Text, or a request to run a Tool
+    * We run the Tool and call the LLM with results
+
+3. Common Use Cases for Tools
+    * Fetch data or add knowledge or context
+    * Take action, like booking a meeting
+    * Perform calculations
+    * Modify the UI
+
+## Example of a Tool Definition
+```python
+# Let's start by making a useful function
+ticket_prices = {"london": "$799", "paris": "$899", "tokyo": "$1400", "berlin": "$499"}
+
+def get_ticket_price(destination_city):
+    print(f"Tool get_ticket_price called for {destination_city}")
+    city = destination_city.lower()
+    return ticket_prices.get(city, "Unknown")
+
+# There's a particular dictionary structure that's required to describe our function:
+# Copy and paste this for the format
+price_function = {
+    "name": "get_ticket_price",
+    "description": "Get the price of a return ticket to the destination city. Call this whenever you need to know the ticket price, for example when a customer asks 'How much is a ticket to this city'",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "destination_city": {
+                "type": "string",
+                "description": "The city that the customer wants to travel to",
+            },
+        },
+        "required": ["destination_city"],
+        "additionalProperties": False
+    }
+}
+
+# And this is included in a list of tools:
+tools = [{"type": "function", "function": price_function}]
+```
+
 ## Summary Mindmap
 The following mindmap summarizes all the key concepts covered in these notes:
 
